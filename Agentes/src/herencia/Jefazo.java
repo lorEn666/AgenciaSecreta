@@ -7,7 +7,10 @@ public final class Jefazo extends Agente {
 		super(nombre, edad, direccion, salario);
 		this.duracionDelMandato = duracionDelMandato;
 	}
-	
-	
 
+	@Override
+	public String toString() {
+		return "**************************" + super.toString() + "\n\nDuración del mandato: " + duracionDelMandato
+				+ "\n\n**************************";
+	}
 }

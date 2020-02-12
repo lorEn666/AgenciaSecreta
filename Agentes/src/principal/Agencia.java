@@ -1,5 +1,6 @@
 package principal;
 
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -79,4 +80,29 @@ public class Agencia {
 		return leer.nextInt();
 	}
 
+	public void listarTodosLosAgentes() {
+		for (int i = 0; i < agencia.length; i++) {
+			if (agencia[i] != null) {
+				System.out.println(agencia[i]);
+			}
+		}
+	}
+
+	public void busquedaAgentesPorSalario() {
+		Scanner leer = new Scanner(System.in);
+		System.out.println("Inserte salario para filtrar la búsqueda:");
+		double salarioBusqueda = leer.nextDouble();
+		for (int i = 0; i < agencia.length; i++) {
+			if (agencia[i] != null && agencia[i].getSalario() > salarioBusqueda) {
+				System.out.println(agencia[i].getNombre());
+			}
+		}
+	}
+
+	public void resetearAgencia() {
+		for (int i = 0; i < agencia.length; i++) {
+			if (agencia[i] != null)
+				agencia[i] = null;
+		}
+	}
 }
