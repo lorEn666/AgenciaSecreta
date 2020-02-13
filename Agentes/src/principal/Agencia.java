@@ -1,5 +1,6 @@
 package principal;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -9,7 +10,7 @@ import herencia.Espia;
 import herencia.Jefazo;
 import herencia.Secreto;
 
-public class Agencia {
+public class Agencia implements Serializable {
 	private Agente[] agencia;
 
 	public Agencia() {

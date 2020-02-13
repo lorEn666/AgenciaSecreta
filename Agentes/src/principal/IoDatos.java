@@ -12,11 +12,21 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class IoDatos {
+	private final String PISOS = "./recursos/pisos.txt";
+	private final String ARMAS = "./recursos/armas.txt";
+	private final String DATOS = "./recursos/datos.dat";
+
+	private File pisos;
+	private File armas;
+	private File datos;
 	private PrintWriter pw;
 	private ObjectInputStream desencriptar;
 	private ObjectOutputStream encriptar;
 
 	public IoDatos() {
+		this.pisos = new File(PISOS);
+		this.armas = new File(ARMAS);
+		this.datos = new File(DATOS);
 		this.pw = null;
 		this.desencriptar = null;
 		this.encriptar = null;
@@ -24,28 +34,28 @@ public class IoDatos {
 
 	private void abrirEscrituraPisos() {
 		try {
-			pw = new PrintWriter(new FileWriter("./recursos/pisos.txt", true));
+			pw = new PrintWriter(new FileWriter(pisos, true));
 		} catch (IOException e) {
 		}
 	}
 
 	private void abrirEscrituraArmas() {
 		try {
-			pw = new PrintWriter(new FileWriter("./recursos/armas.txt", true));
+			pw = new PrintWriter(new FileWriter(armas, true));
 		} catch (IOException e) {
 		}
 	}
 
 	private void abrirEncriptacion() {
 		try {
-			encriptar = new ObjectOutputStream(new FileOutputStream("./recursos/datos.dat"));
+			encriptar = new ObjectOutputStream(new FileOutputStream(datos));
 		} catch (IOException e) {
 		}
 	}
 
 	private void abrirDesencriptacion() {
 		try {
-			desencriptar = new ObjectInputStream(new FileInputStream("./recursos/datos.dat"));
+			desencriptar = new ObjectInputStream(new FileInputStream(datos));
 		} catch (IOException e) {
 		}
 	}
@@ -71,17 +81,15 @@ public class IoDatos {
 	public void ingresarArma() {
 		Scanner leer = new Scanner(System.in);
 		abrirEscrituraArmas();
-		System.out.println("Ingrese arma que desea ingresar:");
+		System.out.println("Ingrese arma que desea registrar:");
 		pw.print(leer.nextLine().trim() + "\n");
 		pw.close();
 		System.out.println("Registro realizado con éxito.");
 	}
-	
+
 	public void encriptarInformacion(Agencia a) {
-		File pisos = new File("./recursos/pisos.txt");
-		File armas = new File("./recursos/armas.txt");
 		abrirEncriptacion();
-		
+
 		try {
 			encriptar.writeObject(a);
 		} catch (IOException e) {
@@ -92,22 +100,28 @@ public class IoDatos {
 			} catch (IOException e) {
 			}
 		}
-		
-		if (pisos.exists()) 
+
+		if (pisos.exists())
 			pisos.delete();
-		
+
 		if (armas.exists())
 			armas.delete();
-		
+
 		a.resetearAgencia();
 	}
-	
+
 	public void desencriptarInformacion(Agencia a) {
 		abrirDesencriptacion();
-		
+
 		try {
 			a = (Agencia) desencriptar.readObject();
 		} catch (ClassNotFoundException | IOException e) {
+		} finally {
+			try {
+				desencriptar.close();
+				System.out.println("Datos desencriptados con éxito.");
+			} catch (IOException e) {
+			}
 		}
 	}
 }

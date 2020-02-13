@@ -31,5 +31,4 @@ public final class Secreto extends Agente {
 	public String toString() {
 		return super.toString() + "\n\nVíctimas: " + muertes + "\n\nArmas asignadas:\n" + getArmas();
 	}
-
 }
