@@ -20,6 +20,7 @@ public final class Espia extends Agente {
 			while (sc.hasNextLine()) {
 				pisos += sc.nextLine() + "\n";
 			}
+			sc.close();
 		} catch (FileNotFoundException e) {
 		}
 		return pisos;

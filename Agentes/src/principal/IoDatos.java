@@ -1,7 +1,10 @@
 package principal;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,20 +17,32 @@ import java.util.Scanner;
 public class IoDatos {
 	private final String PISOS = "./recursos/pisos.txt";
 	private final String ARMAS = "./recursos/armas.txt";
-	private final String DATOS = "./recursos/datos.dat";
+	private final String DATOS_AGENCIA = "./recursos/datosAgencia.dat";
+	private final String DATOS_PISOS = "./recursos/datosPisos.dat";
+	private final String DATOS_ARMAS = "./recursos/datosArmas.dat";
 
 	private File pisos;
 	private File armas;
-	private File datos;
+	private File datosAgencia;
+	private File datosPisos;
+	private File datosArmas;
+	private Scanner sc;
 	private PrintWriter pw;
+	private DataInputStream desencriptarTxt;
+	private DataOutputStream encriptarTxt;
 	private ObjectInputStream desencriptar;
 	private ObjectOutputStream encriptar;
 
 	public IoDatos() {
 		this.pisos = new File(PISOS);
 		this.armas = new File(ARMAS);
-		this.datos = new File(DATOS);
+		this.datosAgencia = new File(DATOS_AGENCIA);
+		this.datosPisos = new File(DATOS_PISOS);
+		this.datosArmas = new File(DATOS_ARMAS);
+		this.sc = null;
 		this.pw = null;
+		this.desencriptarTxt = null;
+		this.encriptarTxt = null;
 		this.desencriptar = null;
 		this.encriptar = null;
 	}
@@ -46,21 +61,57 @@ public class IoDatos {
 		}
 	}
 
-	private void abrirEncriptacion() {
+	private void abrirEncriptacionAgencia() {
 		try {
-			encriptar = new ObjectOutputStream(new FileOutputStream(datos));
+			encriptar = new ObjectOutputStream(new FileOutputStream(datosAgencia));
 		} catch (IOException e) {
 		}
 	}
 
-	private void abrirDesencriptacion() {
+	private void abrirEncriptacionPisos() {
 		try {
-			desencriptar = new ObjectInputStream(new FileInputStream(datos));
+			sc = new Scanner(pisos);
+			encriptarTxt = new DataOutputStream(new FileOutputStream(datosPisos));
+		} catch (FileNotFoundException e) {
+		}
+	}
+
+	private void abrirEncriptacionArmas() {
+		try {
+			sc = new Scanner(armas);
+			encriptarTxt = new DataOutputStream(new FileOutputStream(datosArmas));
+		} catch (FileNotFoundException e) {
+		}
+	}
+
+	private void abrirDesencriptacionAgencia() {
+		try {
+			desencriptar = new ObjectInputStream(new FileInputStream(datosAgencia));
 		} catch (IOException e) {
 		}
 	}
 
-	public void ingresarPiso() {
+	private void abrirDesencriptacionPisos() {
+		try {
+			pw = new PrintWriter(new FileWriter(pisos, true));
+			desencriptarTxt = new DataInputStream(new FileInputStream(datosPisos));
+		} catch (IOException e) {
+		}
+	}
+
+	private void abrirDesencriptacionArmas() {
+		try {
+			pw = new PrintWriter(new FileWriter(armas, true));
+			desencriptarTxt = new DataInputStream(new FileInputStream(datosArmas));
+		} catch (IOException e) {
+		}
+	}
+
+	public void ingresarPiso() throws EncriptacionException {
+		if (datosPisos.exists()) {
+			throw new EncriptacionException(
+					"No es posible realizar nuevos registros hasta desencriptar la información.");
+		}
 		Scanner leer = new Scanner(System.in);
 		abrirEscrituraPisos();
 		System.out.println("Ingrese localidad donde está ubicada el piso:");
@@ -78,7 +129,11 @@ public class IoDatos {
 		System.out.println("Registro realizado con éxito.");
 	}
 
-	public void ingresarArma() {
+	public void ingresarArma() throws EncriptacionException {
+		if (datosArmas.exists()) {
+			throw new EncriptacionException(
+					"No es posible realizar nuevos registros hasta desencriptar la información.");
+		}
 		Scanner leer = new Scanner(System.in);
 		abrirEscrituraArmas();
 		System.out.println("Ingrese arma que desea registrar:");
@@ -87,8 +142,11 @@ public class IoDatos {
 		System.out.println("Registro realizado con éxito.");
 	}
 
-	public void encriptarInformacion(Agencia a) {
-		abrirEncriptacion();
+	public void encriptarInformacion(Agencia a) throws EncriptacionException {
+		if (!pisos.exists() || !armas.exists()) {
+			throw new EncriptacionException("No existen datos suficientes para encriptar.");
+		}
+		abrirEncriptacionAgencia();
 
 		try {
 			encriptar.writeObject(a);
@@ -96,22 +154,60 @@ public class IoDatos {
 		} finally {
 			try {
 				encriptar.close();
-				System.out.println("Datos encriptados con éxito.");
 			} catch (IOException e) {
 			}
 		}
-
-		if (pisos.exists())
-			pisos.delete();
-
-		if (armas.exists())
-			armas.delete();
-
 		a.resetearAgencia();
+		encriptarPisos();
+		encriptarArmas();
+
 	}
 
-	public void desencriptarInformacion(Agencia a) {
-		abrirDesencriptacion();
+	private void encriptarPisos() {
+		abrirEncriptacionPisos();
+
+		try {
+			while (sc.hasNextLine()) {
+				encriptarTxt.writeUTF(sc.nextLine());
+			}
+		} catch (IOException e) {
+		} finally {
+			try {
+				sc.close();
+				encriptarTxt.close();
+			} catch (IOException e) {
+			}
+		}
+		pisos.delete();
+	}
+
+	private void encriptarArmas() {
+		abrirEncriptacionArmas();
+
+		try {
+			while (sc.hasNextLine()) {
+				encriptarTxt.writeUTF(sc.nextLine());
+			}
+		} catch (IOException e) {
+		} finally {
+			try {
+				sc.close();
+				encriptarTxt.close();
+			} catch (IOException e) {
+			}
+		}
+		armas.delete();
+		System.out.println("Datos encriptados con éxito.");
+	}
+
+	public Agencia desencriptarInformacion(Agencia a) throws EncriptacionException {
+		if (!datosAgencia.exists() || !datosPisos.exists() || !datosArmas.exists()) {
+			throw new EncriptacionException("No existen datos encriptados.");
+		}
+
+		desencriptarPisos();
+		desencriptarArmas();
+		abrirDesencriptacionAgencia();
 
 		try {
 			a = (Agencia) desencriptar.readObject();
@@ -119,9 +215,54 @@ public class IoDatos {
 		} finally {
 			try {
 				desencriptar.close();
-				System.out.println("Datos desencriptados con éxito.");
 			} catch (IOException e) {
 			}
+		}
+		datosAgencia.delete();
+		System.out.println("Datos desencriptados con éxito");
+		return a;
+	}
+
+	private void desencriptarPisos() {
+		abrirDesencriptacionPisos();
+
+		try {
+			while (true) {
+				pw.write(desencriptarTxt.readUTF() + "\n");
+			}
+		} catch (IOException e) {
+		} finally {
+			try {
+				pw.close();
+				desencriptarTxt.close();
+			} catch (IOException e) {
+			}
+		}
+		datosPisos.delete();
+	}
+
+	private void desencriptarArmas() {
+		abrirDesencriptacionArmas();
+
+		try {
+			while (true) {
+				pw.write(desencriptarTxt.readUTF() + "\n");
+			}
+		} catch (IOException e) {
+		} finally {
+			try {
+				pw.close();
+				desencriptarTxt.close();
+			} catch (IOException e) {
+			}
+		}
+		datosArmas.delete();
+	}
+
+	public void comprobacion() throws EncriptacionException {
+		if (datosAgencia.exists()) {
+			throw new EncriptacionException(
+					"No es posible realizar nuevos registros hasta desencriptar la información.");
 		}
 	}
 }
