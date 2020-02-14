@@ -54,7 +54,7 @@ public class Main {
 				}
 			} catch (InputMismatchException e) {
 				System.err.println("Error. El tipo de dato introducido no coincide con el solicitado.");
-			} catch (EncriptacionException e) {
+			} catch (EncryptException e) {
 				System.err.println(e.getMessage());
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
