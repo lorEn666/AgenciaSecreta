@@ -10,13 +10,14 @@ package principal;
  * @since 10-02-2020
  *
  */
-public class EncriptacionException extends Exception {
+public class EncryptException extends Exception {
+	
 	/**
 	 * Constructor de la clase.
 	 * 
 	 * @param String mensajeError heredado de la clase padre 'Exception'
 	 */
-	public EncriptacionException(String mensajeError) {
+	public EncryptException(String mensajeError) {
 		super(mensajeError);
 	}
 }

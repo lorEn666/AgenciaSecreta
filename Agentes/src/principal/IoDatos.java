@@ -107,9 +107,9 @@ public class IoDatos {
 		}
 	}
 
-	public void ingresarPiso() throws EncriptacionException {
+	public void ingresarPiso() throws EncryptException {
 		if (datosPisos.exists()) {
-			throw new EncriptacionException(
+			throw new EncryptException(
 					"No es posible realizar nuevos registros hasta desencriptar la información.");
 		}
 		Scanner leer = new Scanner(System.in);
@@ -129,9 +129,9 @@ public class IoDatos {
 		System.out.println("Registro realizado con éxito.");
 	}
 
-	public void ingresarArma() throws EncriptacionException {
+	public void ingresarArma() throws EncryptException {
 		if (datosArmas.exists()) {
-			throw new EncriptacionException(
+			throw new EncryptException(
 					"No es posible realizar nuevos registros hasta desencriptar la información.");
 		}
 		Scanner leer = new Scanner(System.in);
@@ -142,9 +142,9 @@ public class IoDatos {
 		System.out.println("Registro realizado con éxito.");
 	}
 
-	public void encriptarInformacion(Agencia a) throws EncriptacionException {
+	public void encriptarInformacion(Agencia a) throws EncryptException {
 		if (!pisos.exists() || !armas.exists()) {
-			throw new EncriptacionException("No existen datos suficientes para encriptar.");
+			throw new EncryptException("No existen datos suficientes para encriptar.");
 		}
 		abrirEncriptacionAgencia();
 
@@ -200,9 +200,9 @@ public class IoDatos {
 		System.out.println("Datos encriptados con éxito.");
 	}
 
-	public Agencia desencriptarInformacion(Agencia a) throws EncriptacionException {
+	public Agencia desencriptarInformacion(Agencia a) throws EncryptException {
 		if (!datosAgencia.exists() || !datosPisos.exists() || !datosArmas.exists()) {
-			throw new EncriptacionException("No existen datos encriptados.");
+			throw new EncryptException("No existen datos encriptados.");
 		}
 
 		desencriptarPisos();
@@ -259,9 +259,9 @@ public class IoDatos {
 		datosArmas.delete();
 	}
 
-	public void comprobacion() throws EncriptacionException {
+	public void comprobacion() throws EncryptException {
 		if (datosAgencia.exists()) {
-			throw new EncriptacionException(
+			throw new EncryptException(
 					"No es posible realizar nuevos registros hasta desencriptar la información.");
 		}
 	}

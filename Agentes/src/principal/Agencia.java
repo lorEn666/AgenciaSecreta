@@ -27,8 +27,8 @@ public class Agencia implements Serializable {
 	private Agente[] agencia;
 
 	/**
-	 * Único constructor de la clase que almacena todos los agentes (hasta un máximo
-	 * de 20).
+	 * Único constructor de la clase que inicializa el array (tipo de dato 'Agente')
+	 * donde se almacenan todos los agentes (hasta un máximo de 20).
 	 */
 	public Agencia() {
 		this.agencia = new Agente[20];
