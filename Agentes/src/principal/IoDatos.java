@@ -14,6 +14,15 @@ import java.io.PrintWriter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/**
+ * Clase que se encarga de todas las gestiones a la hora de escribir fichero de
+ * texto y binarios empleando los métodos que contiene.
+ * 
+ * @author Borja Loren
+ * @version 1.0.0
+ * @since 10-02-2020
+ *
+ */
 public class IoDatos {
 	private final String PISOS = "./recursos/pisos.txt";
 	private final String ARMAS = "./recursos/armas.txt";
@@ -33,6 +42,11 @@ public class IoDatos {
 	private ObjectInputStream desencriptar;
 	private ObjectOutputStream encriptar;
 
+	/**
+	 * Único constructor de la clase que tiene como atributos todas las clases
+	 * necesarias para escritura y lectura tanto de fichero de texto plano como de
+	 * ficheros binarios, así como los 'File' con sus respectivas rutas.
+	 */
 	public IoDatos() {
 		this.pisos = new File(PISOS);
 		this.armas = new File(ARMAS);
@@ -109,8 +123,7 @@ public class IoDatos {
 
 	public void ingresarPiso() throws EncryptException {
 		if (datosPisos.exists()) {
-			throw new EncryptException(
-					"No es posible realizar nuevos registros hasta desencriptar la información.");
+			throw new EncryptException("No es posible realizar nuevos registros hasta desencriptar la información.");
 		}
 		Scanner leer = new Scanner(System.in);
 		abrirEscrituraPisos();
@@ -131,17 +144,24 @@ public class IoDatos {
 
 	public void ingresarArma() throws EncryptException {
 		if (datosArmas.exists()) {
-			throw new EncryptException(
-					"No es posible realizar nuevos registros hasta desencriptar la información.");
+			throw new EncryptException("No es posible realizar nuevos registros hasta desencriptar la información.");
 		}
 		Scanner leer = new Scanner(System.in);
 		abrirEscrituraArmas();
 		System.out.println("Ingrese arma que desea registrar:");
-		pw.print(leer.nextLine().trim() + "\n");
+		pw.println(leer.nextLine().trim());
 		pw.close();
 		System.out.println("Registro realizado con éxito.");
 	}
 
+	/**
+	 * Método encargado de pasar la clase 'Agencia' a un fichero binario antes del
+	 * reseteo contenido en dicha clase. Tras esto se llama a los métodos
+	 * encriptarPisos() y encriptarArmas().
+	 * 
+	 * @param Agencia a
+	 * @throws EncryptException
+	 */
 	public void encriptarInformacion(Agencia a) throws EncryptException {
 		if (!pisos.exists() || !armas.exists()) {
 			throw new EncryptException("No existen datos suficientes para encriptar.");
@@ -200,6 +220,18 @@ public class IoDatos {
 		System.out.println("Datos encriptados con éxito.");
 	}
 
+	/**
+	 * Método que devuelve el estado original a la clase 'Agencia' y desde donde se
+	 * llaman los métodos desencriptarPisos() y desencriptarArmas() que harán lo
+	 * propio restableciendo los ficheros de texto que los contenían.
+	 * 
+	 * @param Agencia a
+	 * @return Agencia a
+	 * @throws EncryptException Excepción lanzada cuando no existan datos
+	 *                          encriptados. Permitirá abortar el método y saltar
+	 *                          directamente a la clase 'Main' que es desde donde se
+	 *                          gestiona.
+	 */
 	public Agencia desencriptarInformacion(Agencia a) throws EncryptException {
 		if (!datosAgencia.exists() || !datosPisos.exists() || !datosArmas.exists()) {
 			throw new EncryptException("No existen datos encriptados.");
@@ -259,10 +291,17 @@ public class IoDatos {
 		datosArmas.delete();
 	}
 
+	/**
+	 * Método llamado desde la clase 'Main' que comprueba si los datos de la clase
+	 * 'Agencia' han sido encriptados anteriormente. De ser así, lanzára la
+	 * excepción y la aplicación no permitirá el registro de nuevos agentes hasta
+	 * desencriptar la información.
+	 * 
+	 * @throws EncryptException Excepción gestionada desde la clase 'Main'.
+	 */
 	public void comprobacion() throws EncryptException {
 		if (datosAgencia.exists()) {
-			throw new EncryptException(
-					"No es posible realizar nuevos registros hasta desencriptar la información.");
+			throw new EncryptException("No es posible realizar nuevos registros hasta desencriptar la información.");
 		}
 	}
 }
